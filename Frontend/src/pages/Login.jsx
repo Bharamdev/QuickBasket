@@ -1,16 +1,20 @@
 import { useState } from "react"
 import { Link } from "react-router-dom";
 import login from "../assets/login.webp"
+import { loginUser } from "../redux/slices/authSlice";
+import { useDispatch } from "react-redux";
 
 const Login = () => {
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
+    const dispatch = useDispatch();
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        console.log("User Login:", {email, password});
-    }
+        // console.log("User Login:", {email, password});
+        dispatch(loginUser({ email, password}));
+    };
 
   return (
     <div className="flex">
@@ -22,7 +26,7 @@ const Login = () => {
               </div>
               <h2 className="text-2xl font-bold text-center mb-6">Hey there!👋🏻</h2>
               <p className="text-center mb-6">
-                Enter your username and password to Login.
+                Enter your email and password to Login.
               </p>
               <div className="mb-4">
                 <label className="block text-sm font-semibold mb-2">Email</label>
