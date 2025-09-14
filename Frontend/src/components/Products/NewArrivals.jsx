@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
 import { FiChevronLeft , FiChevronRight } from "react-icons/fi";
 import {Link} from "react-router-dom"
+import axios from "axios";
+
 const NewArrivals = () => {
 
     const scrollRef = useRef(null);
@@ -10,96 +12,112 @@ const NewArrivals = () => {
     const [canScrollLeft, setCanScrollLeft] = useState(false);
     const [canScrollRight, setCanScrollRight] = useState(true);
 
-    const newArrivals=[
-        {
-            _id:"1",
-            name: "Stylish Jacket",
-            price:120,
-            image:[
-                {
-                    url:"https://picsum.photos/500/500?random=1",
-                    altText:"Srylish jacket "
-                }
-            ]
-        },
-        {
-            _id:"2",
-            name: "Stylish Jacket",
-            price:120,
-            image:[
-                {
-                    url:"https://picsum.photos/500/500?random=2",
-                    altText:"Srylish jacket "
-                }
-            ]
-        },
-        {
-            _id:"3",
-            name: "Stylish Jacket",
-            price:120,
-            image:[
-                {
-                    url:"https://picsum.photos/500/500?random=3",
-                    altText:"Srylish jacket "
-                }
-            ]
-        },
-        {
-            _id:"4",
-            name: "Stylish Jacket",
-            price:120,
-            image:[
-                {
-                    url:"https://picsum.photos/500/500?random=4",
-                    altText:"Srylish jacket "
-                }
-            ]
-        },
-        {
-            _id:"5",
-            name: "Stylish Jacket",
-            price:120,
-            image:[
-                {
-                    url:"https://picsum.photos/500/500?random=5",
-                    altText:"Srylish jacket "
-                }
-            ]
-        },
-        {
-            _id:"6",
-            name: "Stylish Jacket",
-            price:120,
-            image:[
-                {
-                    url:"https://picsum.photos/500/500?random=6",
-                    altText:"Srylish jacket "
-                }
-            ]
-        },
-        {
-            _id:"7",
-            name: "Stylish Jacket",
-            price:120,
-            image:[
-                {
-                    url:"https://picsum.photos/500/500?random=7",
-                    altText:"Srylish jacket "
-                }
-            ]
-        },
-        {
-            _id:"8",
-            name: "Stylish Jacket",
-            price:120,
-            image:[
-                {
-                    url:"https://picsum.photos/500/500?random=8",
-                    altText:"Srylish jacket "
-                }
-            ]
-        },
-    ];
+    // const newArrivals=[
+    //     {
+    //         _id:"1",
+    //         name: "Stylish Jacket",
+    //         price:120,
+    //         image:[
+    //             {
+    //                 url:"https://picsum.photos/500/500?random=1",
+    //                 altText:"Srylish jacket "
+    //             }
+    //         ]
+    //     },
+    //     {
+    //         _id:"2",
+    //         name: "Stylish Jacket",
+    //         price:120,
+    //         image:[
+    //             {
+    //                 url:"https://picsum.photos/500/500?random=2",
+    //                 altText:"Srylish jacket "
+    //             }
+    //         ]
+    //     },
+    //     {
+    //         _id:"3",
+    //         name: "Stylish Jacket",
+    //         price:120,
+    //         image:[
+    //             {
+    //                 url:"https://picsum.photos/500/500?random=3",
+    //                 altText:"Srylish jacket "
+    //             }
+    //         ]
+    //     },
+    //     {
+    //         _id:"4",
+    //         name: "Stylish Jacket",
+    //         price:120,
+    //         image:[
+    //             {
+    //                 url:"https://picsum.photos/500/500?random=4",
+    //                 altText:"Srylish jacket "
+    //             }
+    //         ]
+    //     },
+    //     {
+    //         _id:"5",
+    //         name: "Stylish Jacket",
+    //         price:120,
+    //         image:[
+    //             {
+    //                 url:"https://picsum.photos/500/500?random=5",
+    //                 altText:"Srylish jacket "
+    //             }
+    //         ]
+    //     },
+    //     {
+    //         _id:"6",
+    //         name: "Stylish Jacket",
+    //         price:120,
+    //         image:[
+    //             {
+    //                 url:"https://picsum.photos/500/500?random=6",
+    //                 altText:"Srylish jacket "
+    //             }
+    //         ]
+    //     },
+    //     {
+    //         _id:"7",
+    //         name: "Stylish Jacket",
+    //         price:120,
+    //         image:[
+    //             {
+    //                 url:"https://picsum.photos/500/500?random=7",
+    //                 altText:"Srylish jacket "
+    //             }
+    //         ]
+    //     },
+    //     {
+    //         _id:"8",
+    //         name: "Stylish Jacket",
+    //         price:120,
+    //         image:[
+    //             {
+    //                 url:"https://picsum.photos/500/500?random=8",
+    //                 altText:"Srylish jacket "
+    //             }
+    //         ]
+    //     },
+    // ];
+
+    const [newArrivals, setNewArrivals] = useState([]);
+
+    useEffect(() => {
+        const fetchNewArrivals = async () => {
+            try {
+                const response = await axios.get(
+                    `${import.meta.env.VITE_BACKEND_URL}/api/products/new-arrivals`
+                );
+                setNewArrivals(response.data);
+            } catch (error) {
+                console.error(error);
+            }
+        };
+        fetchNewArrivals();
+    }, []);
 
     const handleMouseDown =(e)=>{
         setIsDragging(true);
@@ -118,7 +136,7 @@ const NewArrivals = () => {
 
     const scroll = (direction)=>{
         const scrollAmount = direction === "left" ? -300 : 300;
-        scrollRef.current.scrollBy({left: scrollAmount, behaviour: "smooth"})
+        scrollRef.current.scrollBy({left: scrollAmount, behavior: "smooth"})
     }
 
     // Update Scroll Buttons 
@@ -146,7 +164,7 @@ const NewArrivals = () => {
         }
         return ()=> container.removeEventListener("scroll", updateScrollButtons);
 
-    },[])
+    },[newArrivals]);
 
   return (
     <section className="py-16 px-4 lg:px-0">
@@ -186,7 +204,7 @@ const NewArrivals = () => {
         >
             {newArrivals.map((product)=>(
                 <div key={product._id} className="min-w-[100%] sm:min-w-[50%] lg:min-w-[25%] relative">
-                    <img src={product.image[0]?.url} alt={product.image[0]?.altText || product.name}
+                    <img src={product.images[0]?.url} alt={product.images[0]?.altText || product.name}
                       className="w-full h-[400px] object-cover rounded-lg"
                       draggable="false"
                      />

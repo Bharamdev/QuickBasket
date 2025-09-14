@@ -1,6 +1,8 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 
+
+
 // Retrieve user info and token from localStorage if available
 const userFromStorage = localStorage.getItem("userInfo") 
   ? JSON.parse(localStorage.getItem("userInfo")) : null;
@@ -18,7 +20,7 @@ const initialState = {
     error: null,
 };
 
-// Async Thunk fro User Login
+// Async Thunk for User Login
 export const loginUser = createAsyncThunk(
    "auth/loginUser", 
    async (userData, { rejectWithValue }) => {
@@ -42,6 +44,7 @@ export const registerUser = createAsyncThunk(
    "auth/registerUser", 
    async (userData, { rejectWithValue }) => {
        try {
+            // console.log("📤 Sending to backend:", userData);  // 👀 debug
            const response = await axios.post(
                `${import.meta.env.VITE_BACKEND_URL}/api/users/register`,
                userData
@@ -81,8 +84,7 @@ const authSlice = createSlice({
         })
         .addCase(loginUser.fulfilled, (state, action) => {
             state.loading = false;
-            // state.user = action.payload; 
-            state.error = action.payload;
+            state.user = action.payload; 
         })
         .addCase(loginUser.rejected, (state, action) => {
             state.loading = false;
@@ -94,8 +96,7 @@ const authSlice = createSlice({
         })
         .addCase(registerUser.fulfilled, (state, action) => {
             state.loading = false;
-            // state.user = action.payload; 
-            state.error = action.payload;
+            state.user = action.payload;
         })
         .addCase(registerUser.rejected, (state, action) => {
             state.loading = false;

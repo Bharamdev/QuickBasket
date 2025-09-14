@@ -1,44 +1,48 @@
 import { useEffect, useState } from "react"
+import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 
 const MyOrdersPage = () => {
 
-    const [orders, setOrders] = useState([]);
+    // const [orders, setOrders] = useState([]);
     const navigate = useNavigate();
-    useEffect(() => {
-      setTimeout(() => {
-        const mockOrders = [
-        {
-          _id: "12345",
-          createdAt: new Date(),
-          shippingAddress: {city: "New York", country: "USA"},
-          orderItems: [
-            {
-              name: "Product 1",
-              image: "https://picsum.photos/500/500?random=11",
-            },
-          ],
-          totalPrice: 999,
-          isPaid: true,
-        },
-        {
-          _id: "34658",
-          createdAt: new Date(),
-          shippingAddress: {city: "London", country: "England"},
-          orderItems: [
-            {
-              name: "Product 2",
-              image: "https://picsum.photos/500/500?random=12",
-            },
-          ],
-          totalPrice: 1200,
-          isPaid: true,
-        },
-      ];
+    // useEffect(() => {
+    //   setTimeout(() => {
+    //     const mockOrders = [
+    //     {
+    //       _id: "12345",
+    //       createdAt: new Date(),
+    //       shippingAddress: {city: "New York", country: "USA"},
+    //       orderItems: [
+    //         {
+    //           name: "Product 1",
+    //           image: "https://picsum.photos/500/500?random=11",
+    //         },
+    //       ],
+    //       totalPrice: 999,
+    //       isPaid: true,
+    //     },
+    //     {
+    //       _id: "34658",
+    //       createdAt: new Date(),
+    //       shippingAddress: {city: "London", country: "England"},
+    //       orderItems: [
+    //         {
+    //           name: "Product 2",
+    //           image: "https://picsum.photos/500/500?random=12",
+    //         },
+    //       ],
+    //       totalPrice: 1200,
+    //       isPaid: true,
+    //     },
+    //   ];
 
-      setOrders(mockOrders);
-      },1000)
-    },[]);
+    //   setOrders(mockOrders);
+    //   },1000)
+    // },[]);
+
+    const dispatch = useDispatch();
+    const {orders, loading, error} = useSelector((state) => state.orders); 
 
     const handleRowClick = (orderId) => {
       navigate(`/order/${orderId}`);
