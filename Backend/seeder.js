@@ -24,7 +24,7 @@ const seedData = async()=>{
             name: "Admin User",
             email: "admin@example.com",
             password: "123456",
-            role: "Admin",
+            role: "admin",
         });
 
         // Assign the default user ID to each product

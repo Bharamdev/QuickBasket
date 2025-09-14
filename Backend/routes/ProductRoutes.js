@@ -283,7 +283,7 @@ router.get("/:id", async (req,res) =>{
     }
 });
 
-// @route GET /api.products/similar/:id
+// @route GET /api/products/similar/:id
 // @desc Retrieve similar products based on the current product's gender and category
 // @access Public
 router.get("/similar/:id", async (req,res) =>{
