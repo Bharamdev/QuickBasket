@@ -62,7 +62,7 @@ router.put("/:id", protect, admin, async (req,res) => {
         
      }
 });
-
+ 
 // @route DELETE /api/admin/users/:id
 // @desc Delete a user
 // @access Private/Admin
