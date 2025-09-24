@@ -61,7 +61,7 @@ router.put("/:id", protect, admin, async (req,res) => {
         res.status(500).json({message: "Server Error" });
         
      }
-});
+}); 
  
 // @route DELETE /api/admin/users/:id
 // @desc Delete a user
