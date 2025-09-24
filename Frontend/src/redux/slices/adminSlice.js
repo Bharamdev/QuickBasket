@@ -46,7 +46,7 @@ export const updateUser = createAsyncThunk("admin/updateUser",
                 },
             }
         );
-        return response.data;
+        return response.data.user;
     }
 )
 

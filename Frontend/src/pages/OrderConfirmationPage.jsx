@@ -45,9 +45,9 @@ const OrderConfirmationPage = () => {
             localStorage.removeItem("Cart");
         }
         else{
-            navigate("/my-order");
+            navigate("/my-orders");
         }
-    })
+    }, [checkout, dispatch, navigate]);
 
     const calculateEstimatedDelivery = (createdAt) => {
         const orderDate = new Date(createdAt);

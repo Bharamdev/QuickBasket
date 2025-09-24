@@ -152,11 +152,15 @@ const productsSlice = createSlice({
             state.loading = false;
             state.updateProduct = action.payload;
             const index = state.products.findIndex(
-                (product) => product._id === updateProduct._id
+                (product) => product._id === action.payload._id
             );
             if(index !== -1){
                 state.products[index] = action.payload;
             }
+            // also update selectedProduct if it's the one being edited
+           if (state.selectedProduct?._id === updateProduct._id) {
+           state.selectedProduct = updateProduct;
+           }
         })
         .addCase(updateProduct.rejected, (state, action) => {
             state.loading = false;

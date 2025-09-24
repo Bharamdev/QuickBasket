@@ -39,7 +39,7 @@ export const loginUser = createAsyncThunk(
    }
 );
 
-// Async Thunk fro User Registration
+// Async Thunk for User Registration
 export const registerUser = createAsyncThunk(
    "auth/registerUser", 
    async (userData, { rejectWithValue }) => {
