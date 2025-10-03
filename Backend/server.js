@@ -13,6 +13,8 @@ const adminRoutes = require("./routes/adminRoutes");
 const productadminRoutes = require("./routes/productAdminRoutes");
 const adminOrderRoutes = require("./routes/adminOrderRoutes");
 
+const paymentRouter = require("./routes/paymentRoutes");
+
 const app = express();
 app.use(express.json());
 app.use(cors());
@@ -41,6 +43,9 @@ app.use("/api",subscribeRoutes);
 app.use("/api/admin/users",adminRoutes);
 app.use("/api/admin/products",productadminRoutes);
 app.use("/api/admin/orders",adminOrderRoutes);
+
+// Payment
+app.use("/api/payment", paymentRouter);
 
 app.listen(PORT, () => {
     console.log(`Server is runnig on http://localhost:${PORT}`);
