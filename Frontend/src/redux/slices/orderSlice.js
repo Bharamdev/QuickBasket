@@ -53,29 +53,29 @@ const orderSlice = createSlice({
         builder
         // Fetch user Orders
         .addCase(fetchUserOrders.pending, (state) => {
-            state.loading = true,
+            state.loading = true;
             state.error = null;
         })
         .addCase(fetchUserOrders.fulfilled, (state, action) => {
-            state.loading = true,
+            state.loading = false;
             state.orders = action.payload;
         })
         .addCase(fetchUserOrders.rejected, (state, action) => {
-            state.loading = false,
-            state.error = action.payload.message;
+            state.loading = false;
+            state.error = action.payload?.message || "Failed to fetch orders";
         })
         // Fetch order details
         .addCase(fetchOrderDetails.pending, (state) => {
-            state.loading = true,
+            state.loading = true;
             state.error = null;
         })
         .addCase(fetchOrderDetails.fulfilled, (state, action) => {
-            state.loading = true,
+            state.loading = false;
             state.orderDetails = action.payload;
         })
         .addCase(fetchOrderDetails.rejected, (state, action) => {
-            state.loading = false,
-            state.error = action.payload.message;
+            state.loading = false;
+            state.error = action.payload?.message || "Failed to fetch order details";
         })
     }
 });

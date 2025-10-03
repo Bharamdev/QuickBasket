@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import PayPalButton from "./PayPalButton";
+
 import { useDispatch, useSelector } from "react-redux";
 import { createCheckout } from "../../redux/slices/checkoutSlice";
 
@@ -25,6 +25,8 @@ import { createCheckout } from "../../redux/slices/checkoutSlice";
 // };
 
 
+
+
 const Checkout = () => {
 
   const navigate = useNavigate();
@@ -33,6 +35,11 @@ const Checkout = () => {
   const {user} = useSelector((state) => state.auth);
 
   const [checkoutId, setCheckoutId] = useState(null);
+  const [orderId, setOrderId] = useState(null);
+  const [finalizeError, setFinalizeError] = useState("");
+  const [paymentError, setPaymentError] = useState("");
+  const [finalizing, setFinalizing] = useState(false);
+  const [paying, setPaying] = useState(false);
   const [shippingAddress, setShippingAddress] = useState({
     firstName: "",
     lastName: "",
@@ -58,7 +65,7 @@ const Checkout = () => {
         createCheckout({
         checkoutItems: cart.products,
         shippingAddress,
-        paymentMethod: "Paypal",
+  paymentMethod: "Razorpay",
         totalPrice: cart.totalPrice,
         })
       );
@@ -69,33 +76,19 @@ const Checkout = () => {
   };   
 
   const handlePaymentSuccess= async (details) => {
-    // console.log("Payment Success", details);
     try {
       const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/pay`,
         { paymentStatus: "paid", paymentDetails: details},
         {
-          header: {
+          headers: {
             Authorization: `Bearer ${localStorage.getItem("userToken")}`,
           },
         }
       );
-    
-      await handleFinalizeCheckout(checkoutId); // Finalize checkout if payment is successful
-      
-    } catch (error) {
-      console.error(error);
-      
-    }
-    // navigate("/order-confirmation");
-  };
-
-  const handleFinalizeCheckout = async(checkoutId) => {
-    try {
-      const response = await axios.post(
-        `${
-          import.meta.env.VITE_BACKEND.URL
-        }/api/checkout/${checkoutId}/finalize`,
+      // Finalize checkout and get orderId
+      const finalizeRes = await axios.post(
+        `${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/finalize`,
         {},
         {
           headers: {
@@ -103,12 +96,34 @@ const Checkout = () => {
           },
         }
       );
-      navigate("/oder-confirmation");
-
+      if(finalizeRes.data && finalizeRes.data._id){
+        setOrderId(finalizeRes.data._id);
+      }
+      navigate("/order-confirmation");
     } catch (error) {
       console.error(error);
     }
   };
+
+  // const handleFinalizeCheckout = async(checkoutId) => {
+  //   try {
+  //     const response = await axios.post(
+  //       `${
+  //         import.meta.env.VITE_BACKEND.URL
+  //       }/api/checkout/${checkoutId}/finalize`,
+  //       {},
+  //       {
+  //         headers: {
+  //           Authorization: `Bearer ${localStorage.getItem("userToken")}`,
+  //         },
+  //       }
+  //     );
+  //     navigate("/oder-confirmation");
+
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // };
 
   if(loading) return <p>Loading cart ...</p>;
   if(error) return <p>Error: {error}</p>;
@@ -210,15 +225,90 @@ const Checkout = () => {
             {!checkoutId ? (
               <button type="submit" className="w-full bg-black text-white py-3 rounded">
                   Continue to payment</button>
-            ): (
+            ) : (
               <div>
-                <h3 className="text-lg mb-4">Pay with Paypal</h3>
-                {/* Paypal Component */}
-                <PayPalButton 
-                amount={cart.totalPrice} 
-                onSuccess={handlePaymentSuccess} 
-                onError={(err)=> alert("Payment Failed. Try again.")}
-                />
+                <h3 className="text-lg mb-4">Pay with Razorpay</h3>
+                {finalizeError && (
+                  <p className="text-red-600 mb-2">{finalizeError}</p>
+                )}
+                {paymentError && (
+                  <p className="text-red-600 mb-2">{paymentError}</p>
+                )}
+                <button
+                  type="button"
+                  className={`w-full bg-blue-600 text-white py-3 rounded ${finalizing || paying ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={finalizing || paying}
+                  onClick={async () => {
+                    setFinalizeError("");
+                    setPaymentError("");
+                    setFinalizing(true);
+                    let id = orderId;
+                    try {
+                      // Step 1: Mark checkout as paid if not already
+                      const payRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/pay`, {
+                        method: 'PUT',
+                        headers: {
+                          'Authorization': `Bearer ${localStorage.getItem("userToken")}`,
+                          'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ paymentStatus: "paid", paymentDetails: { method: "Razorpay" } })
+                      });
+                      const payData = await payRes.json();
+                      if (!payRes.ok || !payData.isPaid) {
+                        setFinalizeError(payData.message || "Failed to mark checkout as paid. Please try again.");
+                        setFinalizing(false);
+                        return;
+                      }
+                      // Step 2: Finalize checkout and get orderId
+                      const finalizeRes = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/checkout/${checkoutId}/finalize`, {
+                        method: 'POST',
+                        headers: {
+                          'Authorization': `Bearer ${localStorage.getItem("userToken")}`,
+                          'Content-Type': 'application/json',
+                        },
+                      });
+                      const finalizeData = await finalizeRes.json();
+                      if (!finalizeRes.ok || !finalizeData._id) {
+                        setFinalizeError(finalizeData.message || "Failed to finalize checkout. Please ensure you have paid and try again.");
+                        setFinalizing(false);
+                        return;
+                      }
+                      id = finalizeData._id;
+                      setOrderId(id);
+                    } catch (err) {
+                      setFinalizeError("Error finalizing checkout. Please try again.");
+                      setFinalizing(false);
+                      return;
+                    }
+                    setFinalizing(false);
+                    // Debug log for orderId
+                    console.log('Order ID for payment:', id);
+                    // Validate orderId before payment API call
+                    if (!id || typeof id !== 'string' || id.length !== 24) {
+                      setPaymentError("Order ID is invalid. Cannot initiate payment.");
+                      return;
+                    }
+                    setPaying(true);
+                    try {
+                      const response = await fetch(`${import.meta.env.VITE_BACKEND_URL}/api/payment/${id}`, {
+                        method: 'POST',
+                        headers: {
+                          'Authorization': `Bearer ${localStorage.getItem("userToken")}`,
+                          'Content-Type': 'application/json',
+                        },
+                      });
+                      const data = await response.json();
+                      if (response.ok && data.payment_link_url) {
+                        window.location.href = data.payment_link_url;
+                      } else {
+                        setPaymentError(data.message || "Failed to create payment link. Please try again.");
+                      }
+                    } catch (err) {
+                      setPaymentError("Payment initiation failed. Please try again.");
+                    }
+                    setPaying(false);
+                  }}
+                >{finalizing ? "Finalizing..." : paying ? "Redirecting..." : "Pay Now"}</button>
               </div>
             )}
           </div>
