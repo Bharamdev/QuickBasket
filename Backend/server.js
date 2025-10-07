@@ -47,8 +47,7 @@ app.use("/api/admin/orders",adminOrderRoutes);
 // Payment
 app.use("/api/payment", paymentRouter);
 
-// app.listen(PORT, () => {
-//     console.log(`Server is runnig on http://localhost:${PORT}`);
+app.listen(PORT, () => {
+    console.log(`Server is runnig on http://localhost:${PORT}`);
     
-// })
-module.exports = app;
+})
