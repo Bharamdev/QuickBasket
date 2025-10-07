@@ -1,16 +1,16 @@
 { 
-    "version": 2, 
+    "version": 2,
+    "name": "backend", 
     "builds": [
         {
-             "src": "package.json", 
-             "use": "@vercel/static-build", 
-             "config":{ "distDir": "dist" } 
+             "src": "server.js", 
+             "use": "@vercel/node" 
         } 
     ], 
-    "rewrites": [ 
+    "routes": [ 
         { 
-            "source": "/(.*)", 
-            "destination": "/" 
+            "src": "/(.*)", 
+            "dest": "server.js" 
         }
     ] 
 }
